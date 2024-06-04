@@ -32,7 +32,7 @@ public class User extends Timestamped {
 
     @Column(name = "userStatus", nullable = false)
     @Enumerated(EnumType.STRING)
-    private String userStatus;
+    private UserStatusEnum userStatus;
 
     @Column(name = "refreshToken")
     private String refreshToken;
@@ -40,9 +40,11 @@ public class User extends Timestamped {
     @Column(name = "statusChangeTime")
     private Timestamp statusChangeTime;
 
-    @Column(name = "createdAt")
-    private Timestamp createdAt;
-
-    @Column(name = "updatedAt")
-    private Timestamp updatedAt;
+    public User(String userId, String password, String email, String name, UserStatusEnum userStatus){
+        this.userId = userId;
+        this.password = password;
+        this.email = email;
+        this.name = name;
+        this.userStatus = userStatus;
+    }
 }
