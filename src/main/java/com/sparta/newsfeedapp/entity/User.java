@@ -47,7 +47,7 @@ public class User extends Timestamped {
         this.name = name;
         this.userStatus = userStatus;
     }
-
+  
     public void deactivateUser(){
         this.userStatus = UserStatusEnum.DELETED;
     }

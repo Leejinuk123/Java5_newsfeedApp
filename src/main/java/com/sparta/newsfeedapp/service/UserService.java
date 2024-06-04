@@ -47,7 +47,7 @@ public class UserService {
         if (checkEmail.isPresent()) {
             throw new IllegalArgumentException("중복된 Email 입니다.");
         }
-
+      
         // 사용자 등록
         User user = new User(userId, password, email, name, UserStatusEnum.ACTIVE);
         userRepository.save(user);
