@@ -24,7 +24,7 @@ public class User extends Timestamped {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Column(name = "bio", length = 20)
@@ -46,5 +46,9 @@ public class User extends Timestamped {
         this.email = email;
         this.name = name;
         this.userStatus = userStatus;
+    }
+
+    public void deactivateUser(){
+        this.userStatus = UserStatusEnum.DELETED;
     }
 }
