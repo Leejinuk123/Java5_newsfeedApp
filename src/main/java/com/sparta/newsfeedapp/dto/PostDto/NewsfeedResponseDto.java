@@ -1,11 +1,11 @@
 package com.sparta.newsfeedapp.dto.PostDto;
 
 import com.sparta.newsfeedapp.entity.Newsfeed;
+import lombok.Getter;
 
-import java.security.Timestamp;
 import java.time.LocalDateTime;
 
-
+@Getter
 public class NewsfeedResponseDto {
     private Long id;
     private Long userId;
