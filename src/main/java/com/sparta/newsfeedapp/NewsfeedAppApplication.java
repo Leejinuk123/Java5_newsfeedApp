@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 //@SpringBootApplication(exclude = SecurityAutoConfiguration.class) // Spring Security 인증 기능 제외
 @EnableJpaRepositories
 @SpringBootApplication
+
 public class NewsfeedAppApplication {
 
     public static void main(String[] args) {

@@ -7,10 +7,9 @@ import java.sql.Timestamp;
 
 @Entity
 @Getter
+@Table(name = "users")
 @NoArgsConstructor
-@Table(name= "users")
-public class User {
-
+public class User extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -50,5 +49,9 @@ public class User {
 
     public void setRefreshToken(String refreshToken){
         this.refreshToken = refreshToken;
+    }
+  
+    public void deactivateUser(){
+        this.userStatus = UserStatusEnum.DELETED;
     }
 }
