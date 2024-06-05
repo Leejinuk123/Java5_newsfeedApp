@@ -63,14 +63,9 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
-                        .requestMatchers("/api/users/signup").permitAll() // '/api/user/signup' 요청 모두 접근 허가
-                        .requestMatchers("/api/users/login").permitAll() // '/api/user/login' 요청 모두 접근 허가
+                        .requestMatchers("/api/user/signup").permitAll() // '/api/user/signup' 요청 모두 접근 허가
+                        .requestMatchers("/api/user/login").permitAll() // '/api/user/login' 요청 모두 접근 허가
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
-        );
-
-        http.formLogin((formLogin) ->
-                formLogin
-                        .loginPage("/api/user/login-page").permitAll()
         );
 
         // 필터 관리
