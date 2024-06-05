@@ -49,10 +49,12 @@ public class User extends Timestamped {
         this.userStatus = userStatus;
     }
 
+    public void setRefreshToken(String refreshToken){
+        this.refreshToken = refreshToken;
+    }
     public void deactivateUser(){
         this.userStatus = UserStatusEnum.DELETED;
     }
-
     public void update(String newName, String newEmail, String newPassword, String newBio) {
         if (newName != null) this.name = newName;
         if (newEmail != null) this.email = newEmail;
