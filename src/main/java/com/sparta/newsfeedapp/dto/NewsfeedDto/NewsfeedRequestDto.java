@@ -1,4 +1,4 @@
-package com.sparta.newsfeedapp.dto.PostDto;
+package com.sparta.newsfeedapp.dto.NewsfeedDto;
 
 import lombok.Getter;
 

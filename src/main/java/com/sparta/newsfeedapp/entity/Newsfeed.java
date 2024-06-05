@@ -1,6 +1,6 @@
 package com.sparta.newsfeedapp.entity;
 
-import com.sparta.newsfeedapp.dto.PostDto.NewsfeedRequestDto;
+import com.sparta.newsfeedapp.dto.NewsfeedDto.NewsfeedRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +22,10 @@ public class Newsfeed extends Timestamped{
 
     public Newsfeed(NewsfeedRequestDto requestDto) {
         this.userId = requestDto.getUserId();
+        this.content = requestDto.getContent();
+    }
+
+    public void update(NewsfeedRequestDto requestDto) {
         this.content = requestDto.getContent();
     }
 }
