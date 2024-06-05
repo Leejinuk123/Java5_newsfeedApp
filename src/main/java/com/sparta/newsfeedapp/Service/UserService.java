@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -77,16 +78,17 @@ public class UserService {
         refreshToken = authHeader.substring(7);
         userId = jwtUtil.getUserInfoFromToken(refreshToken).getId();
 
-//        if(userId != null){
-//            User user = this.userRepository.findByUserId(userId).get();
-//            if(jwtUtil.isTokenValid(refreshToken, userId)){
-//                 //accessToken 새로 발급
-//                String accessToken = jwtUtil.createToken(user.getUserId());
-//                 //refreshToken 새로 발급
-//
-//                LoginResponseDto loginResponseDto = new LoginResponseDto(accessToken, refreshToken);
-//                new ObjectMapper().writeValue(response.getOutputStream(), loginResponseDto);
-//            }
-//        }
+        if(userId != null){
+            User user = this.userRepository.findByUserId(userId).get();
+            // istokenvalid 메서드 수정 필요
+            if(jwtUtil.isTokenValid(refreshToken, userId)){
+                 //accessToken 새로 발급
+                String newAccessToken = jwtUtil.createToken(user.getUserId());
+                 //refreshToken 새로 발급
+                String newRefreshToken = jwtUtil.createRefreshToken(user.getUserId());
+                LoginResponseDto loginResponseDto = new LoginResponseDto(newAccessToken, newRefreshToken);
+                new ObjectMapper().writeValue(response.getOutputStream(), loginResponseDto);
+            }
+        }
     }
 }
