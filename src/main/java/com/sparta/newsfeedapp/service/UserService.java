@@ -135,5 +135,6 @@ public class UserService {
         }
         refreshToken = authHeader.substring(7);
         userId = jwtUtil.getUserInfoFromToken(refreshToken).getId();
+
     }
 }
