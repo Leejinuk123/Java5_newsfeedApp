@@ -1,6 +1,6 @@
 package com.sparta.newsfeedapp.entity;
 
-import com.sparta.newsfeedapp.dto.NewsfeedDto.NewsfeedRequestDto;
+import com.sparta.newsfeedapp.dto.postRequestDto.PostRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "newsfeed")
-public class Newsfeed extends Timestamped{
+@Table(name = "post")
+public class Post extends Timestamped{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,12 +20,12 @@ public class Newsfeed extends Timestamped{
     @Column(nullable = false)
     private String content;
 
-    public Newsfeed(NewsfeedRequestDto requestDto) {
+    public Post(PostRequestDto requestDto) {
         this.userId = requestDto.getUserId();
         this.content = requestDto.getContent();
     }
 
-    public void update(NewsfeedRequestDto requestDto) {
+    public void update(PostRequestDto requestDto) {
         this.content = requestDto.getContent();
     }
 }

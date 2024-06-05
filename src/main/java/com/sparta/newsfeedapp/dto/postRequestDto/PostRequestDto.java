@@ -1,9 +1,9 @@
-package com.sparta.newsfeedapp.dto.NewsfeedDto;
+package com.sparta.newsfeedapp.dto.postRequestDto;
 
 import lombok.Getter;
 
 @Getter
-public class NewsfeedRequestDto {
+public class PostRequestDto {
     private Long userId;
     private String content;
 }
