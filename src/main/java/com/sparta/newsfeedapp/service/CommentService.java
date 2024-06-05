@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.sql.Time;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -48,6 +49,14 @@ public class CommentService {
 
         commentRepository.save(comment);
         return comment;
+    }
+
+    public List<Comment> getAllComments() {
+        return commentRepository.findAll();
+    }
+
+    public List<Comment> getCommentsByCommentsId(Long id){
+        return commentRepository.findByCommentId(id);
     }
 
     public LocalDateTime timeNow(){

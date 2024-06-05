@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -40,25 +41,21 @@ public class CommentController {
                                                @RequestParam Long userId,
                                                @RequestParam Long newsfeedId){
 
-        Comment comment = new Comment();
-        comment.setContent(requestDto.getContent());
-        comment.setCountLiked(requestDto.getCountLiked());
-
-        // RequestDto > Entity
-
-        //commentList.put(comment.getId(), comment);
-        User user = userRepository.findById(userId).orElseThrow(NullPointerException::new);
-        comment.setUserId(user);
-
-        Newsfeed newsfeed = newsfeedRepository.findById(newsfeedId).orElseThrow(NullPointerException::new);
-        System.out.println(newsfeed.getId());
-        comment.setNewsfeedId(newsfeed);
-
-        commentRepository.save(comment);
-
+        Comment comment = commentService.createNewCommentColum(requestDto, userId, newsfeedId);
         // Entity > ResponseDto 변환
         CommentResponseDto commentResponseDto = new CommentResponseDto(comment);
         return commentResponseDto;
+    }
+
+    //만들긴 했는데 쓸 일이 없을 듯 함. 모든 댓글을 가져와도 쓸 데 없음.
+    @GetMapping("/readAllComments")
+    public List<CommentResponseDto> getAllComments(){
+        return commentService.getAllComments().stream().map(CommentResponseDto::new).toList();
+    }
+
+    @GetMapping("/read")
+    public List<CommentResponseDto> getComments(@RequestParam Long commentId){
+        return commentService.getCommentsByCommentsId(commentId).stream().map(CommentResponseDto::new).toList();
     }
 
 
