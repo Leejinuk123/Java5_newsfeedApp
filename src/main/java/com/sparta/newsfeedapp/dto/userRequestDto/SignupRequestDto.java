@@ -25,4 +25,7 @@ public class SignupRequestDto {
     @Size(max = 8, message = "이름은 최대 8자입니다.")
     @NotBlank(message = "name은 필수입니다.")
     private String name;
+
+    @Size(max = 20, message = "자기소개는 최대 20자입니다.")
+    private String bio;
 }
