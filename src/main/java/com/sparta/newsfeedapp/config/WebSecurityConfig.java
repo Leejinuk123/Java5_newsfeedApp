@@ -2,6 +2,7 @@ package com.sparta.newsfeedapp.config;
 
 import com.sparta.newsfeedapp.jwt.JwtAuthorizationFilter;
 import com.sparta.newsfeedapp.jwt.JwtAuthenticationFilter;
+import com.sparta.newsfeedapp.jwt.JwtRequestFilter;
 import com.sparta.newsfeedapp.jwt.JwtUtil;
 import com.sparta.newsfeedapp.repository.UserRepository;
 import com.sparta.newsfeedapp.security.UserDetailsServiceImpl;
@@ -24,13 +25,15 @@ public class WebSecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final UserRepository userRepository;
+    private final JwtRequestFilter jwtRequestFilter;
 
     public WebSecurityConfig(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService,
-                             AuthenticationConfiguration authenticationConfiguration, UserRepository userRepository) {
+                             AuthenticationConfiguration authenticationConfiguration, UserRepository userRepository, JwtRequestFilter jwtRequestFilter) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
         this.authenticationConfiguration = authenticationConfiguration;
         this.userRepository = userRepository;
+        this.jwtRequestFilter = jwtRequestFilter;
     }
 
     @Bean
@@ -75,6 +78,9 @@ public class WebSecurityConfig {
         );
 
         // 필터 관리
+        // 로그아웃 관련 필터
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+        // 그외 필터
         http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
