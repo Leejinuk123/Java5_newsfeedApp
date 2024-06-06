@@ -12,6 +12,7 @@ import com.sparta.newsfeedapp.service.CommentService;
 import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +25,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/comment")
 @RequiredArgsConstructor
-//@Transactional
+@Transactional
 public class CommentController {
     @Autowired
     CommentRepository commentRepository;
@@ -53,10 +54,20 @@ public class CommentController {
         return commentService.getAllComments().stream().map(CommentResponseDto::new).toList();
     }
 
-    @GetMapping("/read")
-    public List<CommentResponseDto> getComments(@RequestParam Long commentId){
-        return commentService.getCommentsByCommentsId(commentId).stream().map(CommentResponseDto::new).toList();
+    @GetMapping("/readOne")
+    public List<CommentResponseDto> getCommentsBynewsfeedId(@RequestParam Long newsfeedId) {
+        return commentService.getCommentsBynewsfeedId(newsfeedId).stream().map(CommentResponseDto::new).toList();
     }
 
+    @PutMapping("/update")
+    public ResponseEntity<String> updateComment(@RequestBody CommentRequestDto requestDto,
+                                                 @RequestParam Long commentId){
+        return commentService.updateComment(requestDto, commentId);
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteComment(@RequestParam Long commentId){
+        return  commentService.deleteComment(commentId);
+    }
 
 }

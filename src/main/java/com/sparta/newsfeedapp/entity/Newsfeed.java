@@ -16,7 +16,7 @@ public class Newsfeed {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "newsfeedId")
+    @OneToMany(mappedBy = "newsfeed")
     private List<Comment> comment;
 
 

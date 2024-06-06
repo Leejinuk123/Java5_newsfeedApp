@@ -20,11 +20,11 @@ public class Comment extends Timestamped{
 
     @ManyToOne
     @JoinColumn(name = "newsfeedId")
-    private Newsfeed newsfeedId;
+    private Newsfeed newsfeed;
 
     @ManyToOne
     @JoinColumn(name = "userId")
-    private User userId;
+    private User user;
 
     @Column(name = "content", nullable = false)
     private String content;
@@ -43,5 +43,10 @@ public class Comment extends Timestamped{
 
     public Comment() {
 
+    }
+
+    public void update(CommentRequestDto requestDto) {
+        this.content = requestDto.getContent();
+        this.modifiedAt = LocalDateTime.now();
     }
 }

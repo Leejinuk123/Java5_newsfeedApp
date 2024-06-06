@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 @Getter
 public class CommentResponseDto {
     private Long id;
-    private Long userId;
-    private Long newsfeedId;
+    private Long user;
+    private Long newsfeed;
     private String content;
     private Long countLiked;
     private LocalDateTime createdAt;
@@ -22,8 +22,8 @@ public class CommentResponseDto {
 
     public CommentResponseDto(Comment comment){
         this.id = comment.getId();
-        this.userId = comment.getUserId().getId();
-        this.newsfeedId = comment.getNewsfeedId().getId();
+        this.user = comment.getUser().getId();
+        this.newsfeed = comment.getNewsfeed().getId();
         this.content = comment.getContent();
         this.countLiked = comment.getCountLiked();
         this.createdAt = comment.getCreatedAt();

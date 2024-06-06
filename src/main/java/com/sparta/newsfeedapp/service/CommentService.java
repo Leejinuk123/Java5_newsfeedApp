@@ -8,6 +8,8 @@ import com.sparta.newsfeedapp.repository.CommentRepository;
 import com.sparta.newsfeedapp.repository.NewsfeedRepository;
 import com.sparta.newsfeedapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,11 +43,11 @@ public class CommentService {
         // RequestDto > Entity
 
         User user = userRepository.findById(userId).orElseThrow(NullPointerException::new);
-        comment.setUserId(user);
+        comment.setUser(user);
 
         Newsfeed newsfeed = newsfeedRepository.findById(newsfeedId).orElseThrow(NullPointerException::new);
         System.out.println(newsfeed.getId());
-        comment.setNewsfeedId(newsfeed);
+        comment.setNewsfeed(newsfeed);
 
         commentRepository.save(comment);
         return comment;
@@ -55,8 +57,29 @@ public class CommentService {
         return commentRepository.findAll();
     }
 
-    public List<Comment> getCommentsByCommentsId(Long id){
-        return commentRepository.findByCommentId(id);
+    public List<Comment> getCommentsBynewsfeedId(long newsfeedId){
+        return commentRepository.findByNewsfeedId(newsfeedId);
+    }
+
+    public ResponseEntity<String> updateComment(CommentRequestDto requestDto ,Long commentId) {
+        if (commentRepository.existsById(commentId)) {
+            Comment comment = commentRepository.findById(commentId).orElseThrow(NullPointerException::new);
+            comment.update(requestDto);
+            return new ResponseEntity<>("성공적으로 수정했습니다. (" + comment.getContent() + ")", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Comment를 찾지 못해 수정하지 못했습니다.", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public ResponseEntity<String> deleteComment(Long commentId){
+
+        if (commentRepository.existsById(commentId)) {
+            Comment comment = commentRepository.findById(commentId).orElseThrow(NullPointerException::new);
+            commentRepository.deleteById(commentId);
+            return new ResponseEntity<>("성공적으로 삭제했습니다.", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Comment를 찾지 못해 삭제하지 못했습니다.", HttpStatus.NOT_FOUND);
+        }
     }
 
     public LocalDateTime timeNow(){
