@@ -1,10 +1,16 @@
-package com.sparta.newsfeedapp.service;
+package com.sparta.newsfeedapp.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sparta.newsfeedapp.dto.LoginResponseDto;
 import com.sparta.newsfeedapp.dto.userRequestDto.SignupRequestDto;
 import com.sparta.newsfeedapp.dto.userRequestDto.deleteRequestDto;
 import com.sparta.newsfeedapp.entity.User;
 import com.sparta.newsfeedapp.entity.UserStatusEnum;
+import com.sparta.newsfeedapp.jwt.JwtUtil;
 import com.sparta.newsfeedapp.repository.UserRepository;
+import com.sparta.newsfeedapp.security.UserDetailsImpl;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -24,6 +31,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     public void signup(SignupRequestDto requestDto) {
         String userId = requestDto.getUserId();
@@ -71,5 +79,26 @@ public class UserService {
     public User loadUserByUserId(String userId) throws UsernameNotFoundException {
         return userRepository.findByUserId(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다: " + userId));
+    }
+
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        // postman 사용시 header 에 직접 refreshToken 값을 수동으로 넣어주어야 값을 불러올수 있다.
+        String refreshToken = request.getHeader("RefreshToken").substring(7);
+        log.info("Refresh token: " + refreshToken);
+
+        // accessToken 유효성 확인
+        if(jwtUtil.validateToken(refreshToken)){
+            String userId = jwtUtil.extractUserId(refreshToken);
+            User user = userRepository.findByUserId(userId).orElseThrow(NullPointerException::new);
+
+            // accessToken 새로 발급
+            String newAccessToken = jwtUtil.createToken(user.getUserId());
+            log.info("access token 새로 발급");
+            //refreshToken 새로 발급
+            String newRefreshToken = jwtUtil.createRefreshToken(user.getUserId());
+            log.info("refresh token 새로 발급");
+        }
+
     }
 }

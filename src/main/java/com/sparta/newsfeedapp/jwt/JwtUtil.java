@@ -15,10 +15,13 @@ import java.security.Key;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Date;
+import java.util.function.Function;
+
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import io.jsonwebtoken.Claims;
 
 @Component
 public class JwtUtil {
@@ -84,7 +87,7 @@ public class JwtUtil {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException | SignatureException e) {
-            logger.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
+            logger.error("Invalid JWT signature, 유효하지  않는 JWT 서명 입니다.");
         } catch (ExpiredJwtException e) {
             logger.error("Expired JWT token, 만료된 JWT token 입니다.");
         } catch (UnsupportedJwtException e) {
@@ -117,9 +120,16 @@ public class JwtUtil {
         return null;
     }
 
-    // 토큰 유효성 확인
-    public boolean isTokenValid(String token, String userId){
-//        boolean isValid = token.expirationTime > LocalDateTime.now();
-        return true;
+    public String extractUserId(String token){
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
     }
 }
