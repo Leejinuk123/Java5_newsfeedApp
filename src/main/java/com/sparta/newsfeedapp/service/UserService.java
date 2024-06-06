@@ -85,7 +85,7 @@ public class UserService {
 
         // postman 사용시 header 에 직접 refreshToken 값을 수동으로 넣어주어야 값을 불러올수 있다.
         String refreshToken = request.getHeader("RefreshToken").substring(7);
-        log.info("Refresh token: " + refreshToken);
+//        log.info("Refresh token: " + refreshToken);
 
         // accessToken 유효성 확인
         if(jwtUtil.validateToken(refreshToken)){
@@ -99,6 +99,5 @@ public class UserService {
             String newRefreshToken = jwtUtil.createRefreshToken(user.getUserId());
             log.info("refresh token 새로 발급");
         }
-
     }
 }
