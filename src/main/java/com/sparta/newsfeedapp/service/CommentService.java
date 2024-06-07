@@ -54,8 +54,8 @@ public class CommentService {
         return commentRepository.findAll();
     }
 
-    public List<Comment> getCommentsBynewsfeedId(long newsfeedId){
-        return commentRepository.findByNewsfeedId(newsfeedId);
+    public List<Comment> getCommentsBypostId(long newsfeedId){
+        return commentRepository.findByPostId(newsfeedId);
     }
 
     public ResponseEntity<String> updateComment(CommentRequestDto requestDto ,Long commentId) {

@@ -58,8 +58,8 @@ public class CommentController {
     }
 
     @GetMapping("/readOne")
-    public List<CommentResponseDto> getCommentsBynewsfeedId(@RequestParam Long postId) {
-        return commentService.getCommentsBynewsfeedId(postId).stream().map(CommentResponseDto::new).toList();
+    public List<CommentResponseDto> getCommentsBypostId(@RequestParam Long postId) {
+        return commentService.getCommentsBypostId(postId).stream().map(CommentResponseDto::new).toList();
     }
 
     @PutMapping("/update")
