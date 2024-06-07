@@ -1,6 +1,8 @@
 package com.sparta.newsfeedapp.service;
 
-import com.sparta.newsfeedapp.dto.commentRequestDto.CommentRequestDto;
+import com.sparta.newsfeedapp.dto.commentRequestDto.CommentCreateRequestDto;
+import com.sparta.newsfeedapp.dto.commentRequestDto.CommentUpdateRequestDto;
+import com.sparta.newsfeedapp.dto.commentResponseDto.CommentResponseDto;
 import com.sparta.newsfeedapp.entity.Comment;
 import com.sparta.newsfeedapp.entity.Post;
 import com.sparta.newsfeedapp.entity.User;
@@ -8,13 +10,10 @@ import com.sparta.newsfeedapp.repository.CommentRepository;
 import com.sparta.newsfeedapp.repository.PostRepository;
 import com.sparta.newsfeedapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,24 +28,19 @@ public class CommentService {
 
     }
 
-    public Comment createNewCommentColum(CommentRequestDto requestDto, User user){
+    public CommentResponseDto createComment(CommentCreateRequestDto requestDto, Long postId, User user){
         // RequestDto > Entity
-        Post checkPost = postRepository.findById(requestDto.getPostId()).orElseThrow(NullPointerException::new);
-        User checkUser = userRepository.findById(user.getId()).orElseThrow(NullPointerException::new);
-        Comment comment = new Comment(requestDto, checkUser, checkPost);
+        Post checkPost = postRepository.findById(postId).orElseThrow(NullPointerException::new);
+        Comment comment = new Comment(requestDto, user, checkPost);
         commentRepository.save(comment);
-        return comment;
+        return new CommentResponseDto(comment);
     }
 
-    public List<Comment> getAllComments() {
-        return commentRepository.findAll();
-    }
+//    public List<Comment> getComments(long postId){
+//        return commentRepository.findByPostId(postId);
+//    }
 
-    public List<Comment> getComments(long postId){
-        return commentRepository.findByPostId(postId);
-    }
-
-    public ResponseEntity<String> updateComment(CommentRequestDto requestDto ,Long commentId) {
+    public ResponseEntity<String> updateComment(CommentUpdateRequestDto requestDto, Long commentId) {
         if (commentRepository.existsById(commentId)) {
             Comment comment = commentRepository.findById(commentId).orElseThrow(NullPointerException::new);
             comment.update(requestDto);
@@ -57,7 +51,6 @@ public class CommentService {
     }
 
     public ResponseEntity<String> deleteComment(Long commentId){
-
         if (commentRepository.existsById(commentId)) {
             Comment comment = commentRepository.findById(commentId).orElseThrow(NullPointerException::new);
             commentRepository.deleteById(commentId);

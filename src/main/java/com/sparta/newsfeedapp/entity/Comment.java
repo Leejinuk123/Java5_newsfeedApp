@@ -1,11 +1,10 @@
 package com.sparta.newsfeedapp.entity;
 
-import com.sparta.newsfeedapp.dto.commentRequestDto.CommentRequestDto;
+import com.sparta.newsfeedapp.dto.commentRequestDto.CommentCreateRequestDto;
+import com.sparta.newsfeedapp.dto.commentRequestDto.CommentUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -14,7 +13,6 @@ import java.time.LocalDateTime;
 public class Comment extends Timestamped{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id", nullable = false)
     private Long id;
 
     @ManyToOne
@@ -31,15 +29,13 @@ public class Comment extends Timestamped{
     @Column(name = "countLiked", nullable = false)
     private Long countLiked;
 
-    public Comment(CommentRequestDto requestDto, User user, Post post){
-        this.id = requestDto.getId();
+    public Comment(CommentCreateRequestDto requestDto, User user, Post post){
         this.content = requestDto.getContent();
-        this.countLiked = requestDto.getCountLiked();
         this.user = user;
         this.post = post;
     }
 
-    public void update(CommentRequestDto requestDto) {
+    public void update(CommentUpdateRequestDto requestDto) {
         this.content = requestDto.getContent();
     }
 }

@@ -16,17 +16,18 @@ public class Post extends Timestamped{
     private Long id;
 
     @Column(nullable = false)
-    private Long userId;
-
-    @Column(nullable = false)
     private String content;
 
     @OneToMany(mappedBy = "post")
     private List<Comment> comment;
 
-    public Post(PostRequestDto requestDto) {
-        this.userId = requestDto.getUserId();
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    public Post(PostRequestDto requestDto, User user) {
         this.content = requestDto.getContent();
+        this.user = user;
     }
 
     public void update(PostRequestDto requestDto) {

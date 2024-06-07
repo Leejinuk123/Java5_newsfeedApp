@@ -15,10 +15,13 @@ import java.security.Key;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Date;
+import java.util.function.Function;
+
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import io.jsonwebtoken.Claims;
 
 @Component
 public class JwtUtil {
@@ -84,7 +87,7 @@ public class JwtUtil {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException | SignatureException e) {
-            logger.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
+            logger.error("Invalid JWT signature, 유효하지  않는 JWT 서명 입니다.");
         } catch (ExpiredJwtException e) {
             logger.error("Expired JWT token, 만료된 JWT token 입니다.");
         } catch (UnsupportedJwtException e) {
@@ -100,51 +103,31 @@ public class JwtUtil {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
-    // HttpServletRequest 에서 Cookie Value : JWT 가져오기
+    // HttpServletRequest 에서 access token 가져오기
     public String getTokenFromRequest(HttpServletRequest req) {
-        Cookie[] cookies = req.getCookies();
-        if(cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals(AUTHORIZATION_HEADER)) {
-                    try {
-                        return URLDecoder.decode(cookie.getValue(), "UTF-8"); // Encode 되어 넘어간 Value 다시 Decode
-                    } catch (UnsupportedEncodingException e) {
-                        return null;
-                    }
-                }
-            }
-        }
-        return null;
+        String accessToken = req.getHeader("Authorization").substring(7);
+
+        return accessToken;
     }
 
-//    // 토큰 유효성 확인
-//    public boolean isTokenValid(String token, String userId) {
-//        final String tokenUserId = getUserInfoFromToken(token).getId();
-//        return (tokenUserId.equals(userId) && !isTokenExpired(token));
-//    }
-//
-//    private boolean isTokenExpired(String token) {
-//        return (getExpirationDateFromToken(token) < LocalDateTime.now());
-//    }
-//
-//    public static Date getExpirationDateFromToken(String token) {
-//        // 토큰에서 BEARER_PREFIX 제거
-//        if (token.startsWith(BEARER_PREFIX)) {
-//            token = token.substring(BEARER_PREFIX.length());
-//        }
-//
-//        // 토큰 파싱
-////        Jws<Claims> claimsJws = Jwts.parserBuilder()
-////                .setSigningKey(Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKey)))
-////                .build()
-////                .parseClaimsJws(token);
-//
-//        Jws<Claims> claimsJws = Jwts.parserBuilder()
-//                .build()
-//                .parseClaimsJws(token);
-//
-//        // 만료 시간 추출
-//        Claims claims = claimsJws.getBody();
-//        return claims.getExpiration();
-//    }
+    public String extractUserId(String token){
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
+    }
+
+    public Date extractExpiration(String token) {
+        return extractAllClaims(token).getExpiration();
+    }
+
+    public boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
 }

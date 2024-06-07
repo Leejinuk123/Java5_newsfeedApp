@@ -9,31 +9,30 @@ import com.sparta.newsfeedapp.entity.UserStatusEnum;
 import com.sparta.newsfeedapp.jwt.JwtUtil;
 import com.sparta.newsfeedapp.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.Objects;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j(topic = "UserService")
+@Component
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtUtil = jwtUtil;
-    }
-
+    private final JwtBlacklistService jwtBlacklistService;
 
     public void signup(SignupRequestDto requestDto) {
         String userId = requestDto.getUserId();
@@ -66,51 +65,30 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(Long id, deleteRequestDto requestDto) {
-        String userId =  requestDto.getUserId();
+    public void deleteUser(deleteRequestDto requestDto, User user) {
         String userPassword = requestDto.getPassword();
-
-        User checkUser = loadUserById(id);
-        if (!Objects.equals(checkUser.getUserId(), userId)){
-            throw new IllegalArgumentException("유저아이디가 일치하지 않습니다.");
-        }
-        if (!passwordEncoder.matches(userPassword, checkUser.getPassword())){
+        if (!passwordEncoder.matches(userPassword, user.getPassword())){
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
-
-        checkUser.deactivateUser();
+        user.deactivateUser();
     }
 
-    //    - **프로필 조회 기능**
-//            - **사용자 ID, 이름, 한 줄 소개, 이메일**을 볼 수 있습니다.
-//            - **ID(사용자 ID X), 비밀번호, 생성일자, 수정일자**와 같은 데이터는 노출하지 않습니다.
-    public ProfileResponseDto getProfile(Long id) {
-        User checkUser = loadUserById(id);
-        String userId = checkUser.getUserId();
-        String name = checkUser.getName();
-        String email = checkUser.getEmail();
-        String bio = checkUser.getBio();
-        if (checkUser.getBio() == null) bio = "자기소개가 없습니다.";
+    public ProfileResponseDto getProfile(User user) {
+        String userId = user.getUserId();
+        String name = user.getName();
+        String email = user.getEmail();
+        String bio = user.getBio();
+        if (user.getBio() == null) bio = "자기소개가 없습니다.";
 
         return new ProfileResponseDto(userId,name,bio,email);
     }
 
-    /*
-    * - 비밀번호 수정 조건
-    - 비밀번호 수정 시, 본인 확인을 위해 현재 비밀번호를 입력하여 올바른 경우에만 수정할 수 있습니다.
-    - 현재 비밀번호와 동일한 비밀번호로는 변경할 수 없습니다.
-    **  필수 예외처리
-    - 비밀번호 수정 시, 본인 확인을 위해 입력한 현재 비밀번호가 일치하지 않은 경우
-    - 비밀번호 형식이 올바르지 않은 경우
-    - 현재 비밀번호와 동일한 비밀번호로 수정하는 경우
-    * */
     @Transactional
-    public void updateProfile(Long id, updateRequestDto requestDto) {
-        User checkUser = loadUserById(id);
-        if (!passwordEncoder.matches(checkUser.getPassword(), requestDto.getPassword())){
+    public void updateProfile(updateRequestDto requestDto, User user) {
+        if (!passwordEncoder.matches(user.getPassword(), requestDto.getPassword())){
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
-        if (!passwordEncoder.matches(checkUser.getPassword(), requestDto.getNewPassword())){
+        if (!passwordEncoder.matches(user.getPassword(), requestDto.getNewPassword())){
             throw new IllegalArgumentException("현재 비밀번호와 동일한 비밀번호로는 변경할 수 없습니다.");
         }
         String newName = requestDto.getName();
@@ -118,23 +96,29 @@ public class UserService {
         String newPassword = passwordEncoder.encode(requestDto.getNewPassword());
         String newBio = requestDto.getBio();
 
-        checkUser.update(newName, newEmail, newPassword, newBio);
+        user.update(newName, newEmail, newPassword, newBio);
     }
 
-    public User loadUserById(Long id) throws UsernameNotFoundException {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다: " + id));
+    public User loadUserByUserId(String userId) throws UsernameNotFoundException {
+        return userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다: " + userId));
     }
 
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        final String authHeader = request.getHeader("Authorization");
-        final String refreshToken;
-        final String userId;
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return;
-        }
-        refreshToken = authHeader.substring(7);
-        userId = jwtUtil.getUserInfoFromToken(refreshToken).getId();
+    // logout
+    public void logout(HttpServletRequest request) throws IOException {
+        String accessToken = request.getHeader("Authorization").substring(7);
+        String refreshToken = request.getHeader("RefreshToken").substring(7);
 
+        User user = loadUserByUserId(jwtUtil.extractUserId(accessToken));
+        user.setRefreshToken("logged out");
+
+
+        LocalDateTime accessExpiration = jwtUtil.extractExpiration(accessToken).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        jwtBlacklistService.blacklistToken(accessToken, accessExpiration);
+        LocalDateTime refreshExpiration = jwtUtil.extractExpiration(refreshToken).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        jwtBlacklistService.blacklistToken(refreshToken, refreshExpiration);
+
+        SecurityContextHolder.clearContext();
+        log.info("logout success");
     }
 }
