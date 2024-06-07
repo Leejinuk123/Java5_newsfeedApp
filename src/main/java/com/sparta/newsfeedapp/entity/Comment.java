@@ -3,14 +3,14 @@ package com.sparta.newsfeedapp.entity;
 import com.sparta.newsfeedapp.dto.commentRequestDto.CommentRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @Table(name = "comment")
+@NoArgsConstructor
 public class Comment extends Timestamped{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +20,7 @@ public class Comment extends Timestamped{
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
-
+    //컬럼명은 snake_case를 지향
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -38,10 +38,6 @@ public class Comment extends Timestamped{
         this.id = commentRequestDto.getId();
         this.content = commentRequestDto.getContent();
         this.countLiked = commentRequestDto.getCountLiked();
-    }
-
-    public Comment() {
-
     }
 
     public void update(CommentRequestDto requestDto) {

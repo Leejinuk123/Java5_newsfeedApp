@@ -15,10 +15,6 @@ public class User extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    //양방향 매핑
-    @OneToMany(mappedBy = "user")
-    private List<Comment> commentList;
 
     @Column(name = "userId", nullable = false, unique = true)
     private String userId;

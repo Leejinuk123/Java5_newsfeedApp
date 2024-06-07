@@ -19,6 +19,7 @@ import java.util.List;
 public class CommentController {
     CommentService commentService;
 
+    //PathVariable 추가
     @PostMapping("/create")
     public CommentResponseDto createCommentDto(@RequestBody CommentRequestDto requestDto,
                                                @RequestParam Long userId,
@@ -38,12 +39,12 @@ public class CommentController {
 
     @GetMapping("/readOne")
     public List<CommentResponseDto> getCommentsByPostId(@RequestParam Long newsfeedId) {
-        return commentService.getCommentsBynewsfeedId(newsfeedId).stream().map(CommentResponseDto::new).toList();
+        return commentService.getCommentsByPostId(newsfeedId).stream().map(CommentResponseDto::new).toList();
     }
 
     @PutMapping("/update")
     public ResponseEntity<String> updateComment(@RequestBody CommentRequestDto requestDto,
-                                                 @RequestParam Long commentId){
+                                                 @PathVariable Long commentId){
         return commentService.updateComment(requestDto, commentId);
     }
 
