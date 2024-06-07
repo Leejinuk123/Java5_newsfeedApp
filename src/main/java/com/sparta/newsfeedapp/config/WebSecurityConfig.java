@@ -62,10 +62,14 @@ public class WebSecurityConfig {
 
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
-                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
-                        .requestMatchers("/api/user/signup").permitAll() // '/api/user/signup' 요청 모두 접근 허가
-                        .requestMatchers("/api/user/login").permitAll() // '/api/user/login' 요청 모두 접근 허가
-                        .anyRequest().authenticated() // 그 외 모든 요청 인증처리
+                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                        .requestMatchers("/api/users/signup").permitAll()
+                        .requestMatchers("/api/users/login").permitAll()
+                        .requestMatchers("/api/auth/refresh-token").permitAll()
+                        .requestMatchers("/api/mailSend").permitAll()
+                        // 서버 단에서 에러가 발생시 아래 url이 에러창을 띄워준다
+                        .requestMatchers("/error").permitAll()
+                        .anyRequest().authenticated()
         );
 
         // 필터 관리
