@@ -28,7 +28,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body("회원가입이 완료되었습니다.");
     }
 
-    @DeleteMapping("/user/delete/{id}")
+    @DeleteMapping("/user/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id,@Valid @RequestBody deleteRequestDto requestDto){
         userService.deleteUser(id, requestDto);
         return ResponseEntity.status(HttpStatus.OK).body("삭제가 완료되었습니다.");

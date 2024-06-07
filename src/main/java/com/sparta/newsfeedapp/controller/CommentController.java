@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/comment")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 @Transactional
 public class CommentController {
@@ -32,7 +32,7 @@ public class CommentController {
     }
 
     //만들긴 했는데 쓸 일이 없을 듯 함. 모든 댓글을 가져와도 쓸 데 없음.
-    @GetMapping("/readAllComments")
+    @GetMapping("/comments")
     public List<CommentResponseDto> getAllComments(){
         return commentService.getAllComments().stream().map(CommentResponseDto::new).toList();
     }

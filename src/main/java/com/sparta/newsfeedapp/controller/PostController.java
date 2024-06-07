@@ -4,7 +4,6 @@ import com.sparta.newsfeedapp.dto.postRequestDto.PostRequestDto;
 import com.sparta.newsfeedapp.dto.postResponseDto.PostResponseDto;
 import com.sparta.newsfeedapp.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
