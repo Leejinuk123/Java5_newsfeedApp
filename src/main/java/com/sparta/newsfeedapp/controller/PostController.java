@@ -37,8 +37,9 @@ public class PostController {
     }
 
     @GetMapping("/posts/{id}/comments")
-    public List<CommentResponseDto> getComments(@PathVariable Long postId) {
-        return postService.getComments(postId).stream().map(CommentResponseDto::new).toList();
+    public List<CommentResponseDto> getComments(@PathVariable Long id) {
+        return postService.getComments(id).stream().map(CommentResponseDto::new).toList();
+
     }
 
     @PutMapping("/posts/{id}")
