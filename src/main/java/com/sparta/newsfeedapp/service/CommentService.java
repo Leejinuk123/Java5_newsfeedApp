@@ -7,6 +7,7 @@ import com.sparta.newsfeedapp.entity.User;
 import com.sparta.newsfeedapp.repository.CommentRepository;
 import com.sparta.newsfeedapp.repository.PostRepository;
 import com.sparta.newsfeedapp.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +18,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CommentService {
-    @Autowired
     CommentRepository commentRepository;
-    @Autowired
     UserRepository userRepository;
-    @Autowired
     PostRepository postRepository;
 
     public Long findMaxIdOfCommentTable(){
@@ -30,22 +29,11 @@ public class CommentService {
 
     }
 
-    public Comment createNewCommentColum(CommentRequestDto requestDto,
-                                         Long userId,
-                                         Long newsfeedId){
-        Comment comment = new Comment();
-        comment.setContent(requestDto.getContent());
-        comment.setCountLiked(requestDto.getCountLiked());
-
+    public Comment createNewCommentColum(CommentRequestDto requestDto, User user){
         // RequestDto > Entity
-
-        User user = userRepository.findById(userId).orElseThrow(NullPointerException::new);
-        comment.setUser(user);
-
-        Post post = postRepository.findById(newsfeedId).orElseThrow(NullPointerException::new);
-        System.out.println(post.getId());
-        comment.setPost(post);
-
+        Post checkPost = postRepository.findById(requestDto.getPostId()).orElseThrow(NullPointerException::new);
+        User checkUser = userRepository.findById(user.getId()).orElseThrow(NullPointerException::new);
+        Comment comment = new Comment(requestDto, checkUser, checkPost);
         commentRepository.save(comment);
         return comment;
     }
@@ -54,8 +42,8 @@ public class CommentService {
         return commentRepository.findAll();
     }
 
-    public List<Comment> getCommentsBynewsfeedId(long newsfeedId){
-        return commentRepository.findByNewsfeedId(newsfeedId);
+    public List<Comment> getComments(long postId){
+        return commentRepository.findByPostId(postId);
     }
 
     public ResponseEntity<String> updateComment(CommentRequestDto requestDto ,Long commentId) {
@@ -77,9 +65,5 @@ public class CommentService {
         } else {
             return new ResponseEntity<>("Comment를 찾지 못해 삭제하지 못했습니다.", HttpStatus.NOT_FOUND);
         }
-    }
-
-    public LocalDateTime timeNow(){
-        return LocalDateTime.now();
     }
 }

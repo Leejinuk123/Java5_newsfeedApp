@@ -31,17 +31,15 @@ public class Comment extends Timestamped{
     @Column(name = "countLiked", nullable = false)
     private Long countLiked;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    private LocalDateTime modifiedAt;
-    public Comment(CommentRequestDto commentRequestDto){
-        this.id = commentRequestDto.getId();
-        this.content = commentRequestDto.getContent();
-        this.countLiked = commentRequestDto.getCountLiked();
+    public Comment(CommentRequestDto requestDto, User user, Post post){
+        this.id = requestDto.getId();
+        this.content = requestDto.getContent();
+        this.countLiked = requestDto.getCountLiked();
+        this.user = user;
+        this.post = post;
     }
 
     public void update(CommentRequestDto requestDto) {
         this.content = requestDto.getContent();
-        this.modifiedAt = LocalDateTime.now();
     }
 }

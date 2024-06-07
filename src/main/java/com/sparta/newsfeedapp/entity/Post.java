@@ -21,7 +21,7 @@ public class Post extends Timestamped{
     @Column(nullable = false)
     private String content;
 
-    @OneToMany(mappedBy = "newsfeed")
+    @OneToMany(mappedBy = "post")
     private List<Comment> comment;
 
     public Post(PostRequestDto requestDto) {
