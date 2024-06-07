@@ -69,6 +69,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/user/signup").permitAll() // '/api/user/signup' 요청 모두 접근 허가
                         .requestMatchers("/api/user/login").permitAll() // '/api/user/login' 요청 모두 접근 허가
                         .requestMatchers("/api/user/refresh-token").permitAll()
+//                        .requestMatchers("/api/user/logout").permitAll()
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 

@@ -22,10 +22,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         final String requestTokenHeader = request.getHeader("Authorization");
 
-        String jwtToken = requestTokenHeader.substring(7);
-        if (jwtBlacklistService.isTokenBlacklisted(jwtToken)) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token is blacklisted");
-            return;
+        if(requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
+            String jwtToken = requestTokenHeader.substring(7);
+            if (jwtBlacklistService.isTokenBlacklisted(jwtToken)) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token is blacklisted");
+                return;
+            }
         }
 
         chain.doFilter(request, response);
