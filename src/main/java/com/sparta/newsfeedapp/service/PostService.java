@@ -47,6 +47,7 @@ public class PostService {
     public PostResponseDto updatePost(Long id, PostRequestDto requestDto, User user) {
         Post post = findPostById(id);
         if (!post.getUser().getId().equals(user.getId())){
+
             throw new IllegalArgumentException("본인 게시글만 수정할 수 있습니다.");
         }
         post.update(requestDto);

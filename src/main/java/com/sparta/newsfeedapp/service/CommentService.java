@@ -36,12 +36,9 @@ public class CommentService {
         return new CommentResponseDto(comment);
     }
 
-//    public List<Comment> getComments(long postId){
-//        return commentRepository.findByPostId(postId);
-//    }
-
     @Transactional
     public ResponseEntity<String> updateComment(CommentUpdateRequestDto requestDto, Long commentId, User user) {
+
         if (commentRepository.existsById(commentId)) {
             Comment comment = commentRepository.findById(commentId).orElseThrow(NullPointerException::new);
             if (!comment.getUser().getId().equals(user.getId())){
@@ -55,6 +52,7 @@ public class CommentService {
     }
 
     public ResponseEntity<String> deleteComment(Long commentId, User user){
+
         if (commentRepository.existsById(commentId)) {
             Comment comment = commentRepository.findById(commentId).orElseThrow(NullPointerException::new);
             if (!comment.getUser().getId().equals(user.getId())){

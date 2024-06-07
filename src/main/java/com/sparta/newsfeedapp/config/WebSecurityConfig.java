@@ -73,9 +73,9 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                        .requestMatchers("/api/users/signup").permitAll()
-                        .requestMatchers("/api/users/login").permitAll()
-                        .requestMatchers("/api/users/refresh-token").permitAll()
+                        .requestMatchers("/api/user/signup").permitAll()
+                        .requestMatchers("/api/user/login").permitAll()
+                        .requestMatchers("/api/user/refresh-token").permitAll()
                         // 서버 단에서 에러가 발생시 아래 url이 에러창을 띄워준다
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
