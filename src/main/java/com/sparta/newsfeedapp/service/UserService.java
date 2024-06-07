@@ -85,18 +85,27 @@ public class UserService {
 
     @Transactional
     public void updateProfile(updateRequestDto requestDto, User user) {
-        if (!passwordEncoder.matches(user.getPassword(), requestDto.getPassword())){
+        User checkUser = loadUserByUserId(user.getUserId());
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())){
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
-        if (!passwordEncoder.matches(user.getPassword(), requestDto.getNewPassword())){
-            throw new IllegalArgumentException("현재 비밀번호와 동일한 비밀번호로는 변경할 수 없습니다.");
-        }
-        String newName = requestDto.getName();
-        String newEmail = requestDto.getEmail();
-        String newPassword = passwordEncoder.encode(requestDto.getNewPassword());
-        String newBio = requestDto.getBio();
 
-        user.update(newName, newEmail, newPassword, newBio);
+        String newPassword = null;
+        String newName = null;
+        String newEmail = null;
+        String newBio = null;
+
+        if (requestDto.getNewPassword() != null){ //비밀번호가 널이 아니면 아래를 실행 ( 비밀번호가 있으면 아래를 실행 )
+            if (passwordEncoder.matches(requestDto.getNewPassword(), user.getPassword())){
+                throw new IllegalArgumentException("현재 비밀번호와 동일한 비밀번호로는 변경할 수 없습니다.");
+            }
+            newPassword = passwordEncoder.encode(requestDto.getNewPassword());
+        }
+        newName = requestDto.getName();
+        newEmail = requestDto.getEmail();
+        newBio = requestDto.getBio();
+
+        checkUser.update(newName, newEmail, newPassword, newBio);
     }
 
     public User loadUserByUserId(String userId) throws UsernameNotFoundException {

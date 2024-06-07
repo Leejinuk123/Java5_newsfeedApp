@@ -15,7 +15,7 @@ public class CommentResponseDto {
     private Long userId;
     private Long postId;
     private String content;
-    private Long countLiked;
+    private Integer countLiked;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
