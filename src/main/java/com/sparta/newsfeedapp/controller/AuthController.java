@@ -35,10 +35,4 @@ public class AuthController {
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         authService.refreshToken(request, response);
     }
-
-    // logout
-    @PostMapping("/logout")
-    public void logout(HttpServletRequest request) throws IOException {
-        authService.logout(request);
-    }
 }

@@ -58,8 +58,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         // refresh token 유저에 저장
         User user = userRepository.findByUserId(userId).orElseThrow(NullPointerException::new);
         user.setRefreshToken(refreshToken);
-//        log.info(user.getRefreshToken());
-//        log.info(user.getUserId());
+
+        userRepository.save(user);
+
         // 헤더에 토큰 저장
         response.setHeader("Authorization", token);
         response.setHeader("RefreshToken", refreshToken);

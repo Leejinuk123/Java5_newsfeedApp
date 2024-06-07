@@ -9,11 +9,13 @@ import com.sparta.newsfeedapp.entity.UserStatusEnum;
 import com.sparta.newsfeedapp.jwt.JwtUtil;
 import com.sparta.newsfeedapp.repository.UserRepository;
 import com.sparta.newsfeedapp.security.UserDetailsImpl;
+import io.jsonwebtoken.JwtBuilder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +23,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 
 @Service
@@ -32,12 +36,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final JwtBlacklistService jwtBlacklistService;
 
     public void signup(SignupRequestDto requestDto) {
         String userId = requestDto.getUserId();
         String password = passwordEncoder.encode(requestDto.getPassword());
         String email = requestDto.getEmail();
         String name = requestDto.getName();
+        String bio = requestDto.getBio();
 
         // 회원 중복 확인
         Optional<User> checkUsername = userRepository.findByUserId(userId);
@@ -76,30 +82,26 @@ public class UserService {
 
     }
 
-
-
     public User loadUserByUserId(String userId) throws UsernameNotFoundException {
         return userRepository.findByUserId(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다: " + userId));
     }
 
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-        // postman 사용시 header 에 직접 refreshToken 값을 수동으로 넣어주어야 값을 불러올수 있다.
+    // logout
+    public void logout(HttpServletRequest request) throws IOException {
+        String accessToken = request.getHeader("Authorization").substring(7);
         String refreshToken = request.getHeader("RefreshToken").substring(7);
-//        log.info("Refresh token: " + refreshToken);
 
-        // accessToken 유효성 확인
-        if(jwtUtil.validateToken(refreshToken)){
-            String userId = jwtUtil.extractUserId(refreshToken);
-            User user = userRepository.findByUserId(userId).orElseThrow(NullPointerException::new);
+        User user = loadUserByUserId(jwtUtil.extractUserId(accessToken));
+        user.setRefreshToken("logged out");
 
-            // accessToken 새로 발급
-            String newAccessToken = jwtUtil.createToken(user.getUserId());
-            log.info("access token 새로 발급");
-            //refreshToken 새로 발급
-            String newRefreshToken = jwtUtil.createRefreshToken(user.getUserId());
-            log.info("refresh token 새로 발급");
-        }
+
+        LocalDateTime accessExpiration = jwtUtil.extractExpiration(accessToken).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        jwtBlacklistService.blacklistToken(accessToken, accessExpiration);
+        LocalDateTime refreshExpiration = jwtUtil.extractExpiration(refreshToken).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        jwtBlacklistService.blacklistToken(refreshToken, refreshExpiration);
+
+        SecurityContextHolder.clearContext();
+        log.info("logout success");
     }
 }

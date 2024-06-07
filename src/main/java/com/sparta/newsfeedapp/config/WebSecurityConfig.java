@@ -1,5 +1,7 @@
 package com.sparta.newsfeedapp.config;
 
+import com.sparta.newsfeedapp.Service.JwtBlacklistService;
+import com.sparta.newsfeedapp.Service.UserService;
 import com.sparta.newsfeedapp.jwt.JwtAuthorizationFilter;
 import com.sparta.newsfeedapp.jwt.JwtAuthenticationFilter;
 import com.sparta.newsfeedapp.jwt.JwtRequestFilter;
@@ -25,15 +27,15 @@ public class WebSecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final UserRepository userRepository;
-    private final JwtRequestFilter jwtRequestFilter;
+    private final JwtBlacklistService jwtBlacklistService;
 
     public WebSecurityConfig(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService,
-                             AuthenticationConfiguration authenticationConfiguration, UserRepository userRepository, JwtRequestFilter jwtRequestFilter) {
+                             AuthenticationConfiguration authenticationConfiguration, UserRepository userRepository, JwtBlacklistService jwtBlacklistService, UserService userService) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
         this.authenticationConfiguration = authenticationConfiguration;
         this.userRepository = userRepository;
-        this.jwtRequestFilter = jwtRequestFilter;
+        this.jwtBlacklistService = jwtBlacklistService;
     }
 
     @Bean
@@ -54,6 +56,11 @@ public class WebSecurityConfig {
     }
 
     @Bean
+    public JwtRequestFilter jwtRequestFilter() {
+        return new JwtRequestFilter(jwtBlacklistService, jwtUtil);
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // CSRF 설정
         http.csrf((csrf) -> csrf.disable());
@@ -65,25 +72,19 @@ public class WebSecurityConfig {
 
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
-                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
-                        .requestMatchers("/api/user/signup").permitAll() // '/api/user/signup' 요청 모두 접근 허가
-                        .requestMatchers("/api/user/login").permitAll() // '/api/user/login' 요청 모두 접근 허가
+                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                        .requestMatchers("/api/user/signup").permitAll()
+                        .requestMatchers("/api/user/login").permitAll()
                         .requestMatchers("/api/user/refresh-token").permitAll()
-//                        .requestMatchers("/api/user/logout").permitAll()
-                        .anyRequest().authenticated() // 그 외 모든 요청 인증처리
-        );
-
-        http.formLogin((formLogin) ->
-                formLogin
-                        .loginPage("/api/user/login-page").permitAll()
+                        // 서버 단에서 에러가 발생시 아래 url이 에러창을 띄워준다
+                        .requestMatchers("/error").permitAll()
+                        .anyRequest().authenticated()
         );
 
         // 필터 관리
-        // 로그아웃 관련 필터
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-        // 그외 필터
         http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtRequestFilter(), JwtAuthorizationFilter.class);
 
         return http.build();
     }
