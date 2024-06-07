@@ -2,19 +2,16 @@ package com.sparta.newsfeedapp.service;
 
 import com.sparta.newsfeedapp.dto.CommentRequestDto;
 import com.sparta.newsfeedapp.entity.Comment;
-import com.sparta.newsfeedapp.entity.Newsfeed;
+import com.sparta.newsfeedapp.entity.Post;
 import com.sparta.newsfeedapp.entity.User;
 import com.sparta.newsfeedapp.repository.CommentRepository;
-import com.sparta.newsfeedapp.repository.NewsfeedRepository;
+import com.sparta.newsfeedapp.repository.PostRepository;
 import com.sparta.newsfeedapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +23,7 @@ public class CommentService {
     @Autowired
     UserRepository userRepository;
     @Autowired
-    NewsfeedRepository newsfeedRepository;
+    PostRepository postRepository;
 
     public Long findMaxIdOfCommentTable(){
         return Optional.ofNullable(commentRepository.findMaxId()).orElse((long)0);
@@ -45,9 +42,9 @@ public class CommentService {
         User user = userRepository.findById(userId).orElseThrow(NullPointerException::new);
         comment.setUser(user);
 
-        Newsfeed newsfeed = newsfeedRepository.findById(newsfeedId).orElseThrow(NullPointerException::new);
-        System.out.println(newsfeed.getId());
-        comment.setNewsfeed(newsfeed);
+        Post post = postRepository.findById(newsfeedId).orElseThrow(NullPointerException::new);
+        System.out.println(post.getId());
+        comment.setPost(post);
 
         commentRepository.save(comment);
         return comment;

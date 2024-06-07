@@ -19,8 +19,8 @@ public class Comment extends Timestamped{
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "newsfeedId")
-    private Newsfeed newsfeed;
+    @JoinColumn(name = "postId")
+    private Post post;
 
     @ManyToOne
     @JoinColumn(name = "userId")

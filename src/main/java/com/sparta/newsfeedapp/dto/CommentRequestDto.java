@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class CommentRequestDto {
     private Long id;
     private Long user;
-    private Long newsfeed;
+    private Long post;
     private String content;
     private Long countLiked;
     private LocalDateTime createdAt;
@@ -23,7 +23,7 @@ public class CommentRequestDto {
     public CommentRequestDto(Comment comment){
         this.id = comment.getId();
         this.user = comment.getUser().getId();
-        this.newsfeed = comment.getNewsfeed().getId();
+        this.post = comment.getPost().getId();
         this.content = comment.getContent();
         this.countLiked = comment.getCountLiked();
         this.createdAt = comment.getCreatedAt();
