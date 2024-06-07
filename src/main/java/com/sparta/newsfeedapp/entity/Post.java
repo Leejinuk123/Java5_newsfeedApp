@@ -4,6 +4,7 @@ import com.sparta.newsfeedapp.dto.postRequestDto.PostRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import java.util.List;
 
 @Entity
 @Getter
@@ -19,6 +20,9 @@ public class Post extends Timestamped{
 
     @Column(nullable = false)
     private String content;
+
+    @OneToMany(mappedBy = "newsfeed")
+    private List<Comment> comment;
 
     public Post(PostRequestDto requestDto) {
         this.userId = requestDto.getUserId();

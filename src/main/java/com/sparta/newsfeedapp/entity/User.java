@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
 @Getter
@@ -14,6 +15,10 @@ public class User extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
+    //양방향 매핑
+    @OneToMany(mappedBy = "user")
+    private List<Comment> commentList;
 
     @Column(name = "userId", nullable = false, unique = true)
     private String userId;
@@ -52,6 +57,7 @@ public class User extends Timestamped {
     public void setRefreshToken(String refreshToken){
         this.refreshToken = refreshToken;
     }
+
     public void deactivateUser(){
         this.userStatus = UserStatusEnum.DELETED;
     }
