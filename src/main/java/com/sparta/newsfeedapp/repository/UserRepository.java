@@ -2,7 +2,13 @@ package com.sparta.newsfeedapp.repository;
 
 import com.sparta.newsfeedapp.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface UserRepository  extends JpaRepository<User, Long> {
+import java.util.Optional;
 
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByUserId(String userId);
+
+    Optional<User> findByEmail(String email);
 }
