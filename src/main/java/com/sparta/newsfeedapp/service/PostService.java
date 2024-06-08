@@ -8,7 +8,8 @@ import com.sparta.newsfeedapp.entity.User;
 import com.sparta.newsfeedapp.repository.CommentRepository;
 import com.sparta.newsfeedapp.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.type.descriptor.java.ObjectJavaType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,21 +33,25 @@ public class PostService {
     }
 
     public List<PostResponseDto> getAllPost() {
-        return postRepository.findAllByOrderByCreatedAtDesc().stream().map(PostResponseDto :: new).toList();
+        return postRepository.findAllByOrderByCreatedAtDesc().stream().map(PostResponseDto::new).toList();
+    }
+
+    public Page<Post> getPosts(Pageable pageable) {
+        return postRepository.findAllByOrderByCreatedAtDesc(pageable);
     }
 
     public List<PostResponseDto> getPost(Long id) {
-        return postRepository.findAllById(id).stream().map(PostResponseDto :: new).toList();
+        return postRepository.findAllById(id).stream().map(PostResponseDto::new).toList();
     }
 
-    public List<Comment> getComments(Long postId){
+    public List<Comment> getComments(Long postId) {
         return commentRepository.findByPostId(postId);
     }
 
     @Transactional
     public PostResponseDto updatePost(Long id, PostRequestDto requestDto, User user) {
         Post post = findPostById(id);
-        if (!Objects.equals(post.getUser(), user)){
+        if (!Objects.equals(post.getUser(), user)) {
             throw new IllegalArgumentException("본인 게시글만 수정할 수 있습니다.");
         }
         post.update(requestDto);
@@ -55,7 +60,7 @@ public class PostService {
 
     public Long deletePost(Long id, User user) {
         Post post = findPostById(id);
-        if (!Objects.equals(post.getUser(), user)){
+        if (!Objects.equals(post.getUser(), user)) {
             throw new IllegalArgumentException("본인 게시글만 수정할 수 있습니다.");
         }
         postRepository.delete(post);
