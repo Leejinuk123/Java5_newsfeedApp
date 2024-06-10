@@ -1,7 +1,7 @@
 package com.sparta.newsfeedapp.entity;
 
-import com.sparta.newsfeedapp.dto.commentRequestDto.CommentCreateRequestDto;
-import com.sparta.newsfeedapp.dto.commentRequestDto.CommentUpdateRequestDto;
+import com.sparta.newsfeedapp.dto.comment.CommentCreateRequestDto;
+import com.sparta.newsfeedapp.dto.comment.CommentUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +26,7 @@ public class Comment extends Timestamped{
     @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "countLiked", nullable = false)
+    @Column(name = "count_liked", nullable = false)
     private Integer countLiked;
 
     public Comment(CommentCreateRequestDto requestDto, User user, Post post){

@@ -16,7 +16,7 @@ public class User extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "userId", nullable = false, unique = true)
+    @Column(name = "user_id", nullable = false, unique = true)
     private String userId;
 
     @Column(name = "password", nullable = false)
@@ -31,14 +31,14 @@ public class User extends Timestamped {
     @Column(name = "bio", length = 20)
     private String bio;
 
-    @Column(name = "userStatus", nullable = false)
+    @Column(name = "user_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private UserStatusEnum userStatus;
 
-    @Column(name = "refreshToken")
+    @Column(name = "refresh_token")
     private String refreshToken;
 
-    @Column(name = "statusChangeTime")
+    @Column(name = "status_change_time")
     private Timestamp statusChangeTime;
 
     public User(String userId, String password, String email, String name, String bio, UserStatusEnum userStatus){

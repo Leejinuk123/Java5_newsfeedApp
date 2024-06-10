@@ -1,10 +1,9 @@
 package com.sparta.newsfeedapp.entity;
 
-import com.sparta.newsfeedapp.dto.postRequestDto.PostRequestDto;
+import com.sparta.newsfeedapp.dto.post.PostRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import java.util.List;
 
 @Entity
 @Getter
@@ -18,8 +17,8 @@ public class Post extends Timestamped{
     @Column(nullable = false)
     private String content;
 
-    @OneToMany(mappedBy = "post")
-    private List<Comment> comment;
+//    @OneToMany(mappedBy = "post")
+//    private List<Comment> comment;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
