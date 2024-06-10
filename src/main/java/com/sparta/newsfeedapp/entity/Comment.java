@@ -1,52 +1,42 @@
 package com.sparta.newsfeedapp.entity;
 
-import com.sparta.newsfeedapp.dto.CommentRequestDto;
+import com.sparta.newsfeedapp.dto.commentRequestDto.CommentCreateRequestDto;
+import com.sparta.newsfeedapp.dto.commentRequestDto.CommentUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
-
-import java.time.LocalDateTime;
-import java.util.List;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Setter
 @Table(name = "comment")
+@NoArgsConstructor
 public class Comment extends Timestamped{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id", nullable = false)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "postId")
+    @JoinColumn(name = "post_id")
     private Post post;
-
+    //컬럼명은 snake_case를 지향
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(name = "content", nullable = false)
     private String content;
 
     @Column(name = "countLiked", nullable = false)
-    private Long countLiked;
+    private Integer countLiked;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    private LocalDateTime modifiedAt;
-    public Comment(CommentRequestDto commentRequestDto){
-        this.id = commentRequestDto.getId();
-        this.content = commentRequestDto.getContent();
-        this.countLiked = commentRequestDto.getCountLiked();
-    }
-
-    public Comment() {
-
-    }
-
-    public void update(CommentRequestDto requestDto) {
+    public Comment(CommentCreateRequestDto requestDto, User user, Post post){
         this.content = requestDto.getContent();
-        this.modifiedAt = LocalDateTime.now();
+        this.countLiked = 0;
+        this.user = user;
+        this.post = post;
+    }
+
+    public void update(CommentUpdateRequestDto requestDto) {
+        this.content = requestDto.getContent();
     }
 }

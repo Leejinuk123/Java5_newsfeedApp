@@ -1,10 +1,12 @@
 package com.sparta.newsfeedapp.controller;
 
+import com.sparta.newsfeedapp.dto.commentResponseDto.CommentResponseDto;
 import com.sparta.newsfeedapp.dto.postRequestDto.PostRequestDto;
 import com.sparta.newsfeedapp.dto.postResponseDto.PostResponseDto;
+import com.sparta.newsfeedapp.security.UserDetailsImpl;
 import com.sparta.newsfeedapp.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,30 +19,36 @@ public class PostController {
     public final PostService postService;
 
     // 뉴스피드 생성
-    @PostMapping("/post")
-    public PostResponseDto post(@RequestBody PostRequestDto requestDto) {
-        return postService.createPost(requestDto);
+    @PostMapping("/posts")
+    public PostResponseDto createPost(@RequestBody PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return postService.createPost(requestDto, userDetails.getUser());
     }
 
     // 뉴스피드 전체 조회
-    @GetMapping("/post")
-    public List<PostResponseDto> getAll() {
-        return postService.getPostAll();
+    @GetMapping("/posts")
+    public List<PostResponseDto> getAllPost() {
+        return postService.getAllPost();
     }
 
     // 뉴스피드 일부 조회
-    @GetMapping("/post/{id}")
-    public List<PostResponseDto> chooseNewsfeed(@PathVariable Long id) {
+    @GetMapping("/posts/{id}")
+    public List<PostResponseDto> getPost(@PathVariable Long id) {
         return postService.getPost(id);
     }
 
-    @PutMapping("/post/{id}")
-    public PostResponseDto updatePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto) {
-        return postService.updatePost(id, requestDto);
+    @GetMapping("/posts/{id}/comments")
+    public List<CommentResponseDto> getComments(@PathVariable Long id) {
+        return postService.getComments(id).stream().map(CommentResponseDto::new).toList();
+
     }
 
-    @DeleteMapping("/post/{id}")
-    public Long delete(@PathVariable Long id) {
-        return postService.deletePost(id);
+    @PutMapping("/posts/{id}")
+    public PostResponseDto updatePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return postService.updatePost(id, requestDto, userDetails.getUser());
+    }
+
+    @DeleteMapping("/posts/{id}")
+    public Long deletePost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return postService.deletePost(id, userDetails.getUser());
     }
 }

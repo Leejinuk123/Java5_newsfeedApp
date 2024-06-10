@@ -4,13 +4,14 @@ import com.sparta.newsfeedapp.dto.userRequestDto.SignupRequestDto;
 import com.sparta.newsfeedapp.dto.userRequestDto.deleteRequestDto;
 import com.sparta.newsfeedapp.dto.userRequestDto.updateRequestDto;
 import com.sparta.newsfeedapp.dto.userResponseDto.ProfileResponseDto;
+import com.sparta.newsfeedapp.security.UserDetailsImpl;
 import com.sparta.newsfeedapp.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -22,36 +23,32 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/user/signup")
+    @PostMapping("/users/signup")
     public ResponseEntity<String> signup(@Valid @RequestBody SignupRequestDto requestDto){
         userService.signup(requestDto);
         return ResponseEntity.status(HttpStatus.OK).body("회원가입이 완료되었습니다.");
     }
 
-    @DeleteMapping("/user/delete/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long id,@Valid @RequestBody deleteRequestDto requestDto){
-        userService.deleteUser(id, requestDto);
+    @DeleteMapping("/users")
+    public ResponseEntity<String> deleteUser(@Valid @RequestBody deleteRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        userService.deleteUser(requestDto, userDetails.getUser());
         return ResponseEntity.status(HttpStatus.OK).body("삭제가 완료되었습니다.");
     }
 
-    @GetMapping("/user/profile/{id}")
-    public ProfileResponseDto getProfile(@PathVariable Long id){
-        return userService.getProfile(id);
+    @GetMapping("/users/profile")
+    public ProfileResponseDto getProfile(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return userService.getProfile(userDetails.getUser());
     }
 
-    @PutMapping("/user/profile/{id}")
-    public ResponseEntity<String> updateProfile(@PathVariable Long id, @Valid @RequestBody updateRequestDto requestDto){
-        userService.updateProfile(id,requestDto);
+    @PutMapping("/users/profile")
+    public ResponseEntity<String> updateProfile(@Valid @RequestBody updateRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        userService.updateProfile(requestDto, userDetails.getUser());
         return ResponseEntity.status(HttpStatus.OK).body("수정이 완료되었습니다.");
     }
 
-    // Refresh token
-    @PostMapping("/user/refresh-token")
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response){
-        try {
-            userService.refreshToken(request, response);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    // logout
+    @PostMapping("/users/logout")
+    public void logout(HttpServletRequest request) throws IOException {
+        userService.logout(request);
     }
 }

@@ -4,6 +4,7 @@ import com.sparta.newsfeedapp.dto.postRequestDto.PostRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import java.util.List;
 
 @Entity
 @Getter
@@ -15,14 +16,18 @@ public class Post extends Timestamped{
     private Long id;
 
     @Column(nullable = false)
-    private Long userId;
-
-    @Column(nullable = false)
     private String content;
 
-    public Post(PostRequestDto requestDto) {
-        this.userId = requestDto.getUserId();
+    @OneToMany(mappedBy = "post")
+    private List<Comment> comment;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    public Post(PostRequestDto requestDto, User user) {
         this.content = requestDto.getContent();
+        this.user = user;
     }
 
     public void update(PostRequestDto requestDto) {
