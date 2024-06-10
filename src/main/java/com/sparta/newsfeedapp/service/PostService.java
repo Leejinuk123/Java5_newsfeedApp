@@ -8,7 +8,8 @@ import com.sparta.newsfeedapp.entity.User;
 import com.sparta.newsfeedapp.repository.CommentRepository;
 import com.sparta.newsfeedapp.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.type.descriptor.java.ObjectJavaType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,14 +33,18 @@ public class PostService {
     }
 
     public List<PostResponseDto> getAllPost() {
-        return postRepository.findAllByOrderByCreatedAtDesc().stream().map(PostResponseDto :: new).toList();
+        return postRepository.findAllByOrderByCreatedAtDesc().stream().map(PostResponseDto::new).toList();
+    }
+
+    public Page<Post> getPosts(Pageable pageable) {
+        return postRepository.findAllByOrderByCreatedAtDesc(pageable);
     }
 
     public List<PostResponseDto> getPost(Long id) {
-        return postRepository.findAllById(id).stream().map(PostResponseDto :: new).toList();
+        return postRepository.findAllById(id).stream().map(PostResponseDto::new).toList();
     }
 
-    public List<Comment> getComments(Long postId){
+    public List<Comment> getComments(Long postId) {
         return commentRepository.findByPostId(postId);
     }
 
