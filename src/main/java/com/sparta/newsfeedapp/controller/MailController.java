@@ -1,6 +1,6 @@
 package com.sparta.newsfeedapp.controller;
 
-import com.sparta.newsfeedapp.dto.userRequestDto.SignupRequestDto;
+import com.sparta.newsfeedapp.dto.user.SignupRequestDto;
 import com.sparta.newsfeedapp.service.MailSendService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -1,9 +1,9 @@
 package com.sparta.newsfeedapp.controller;
 
-import com.sparta.newsfeedapp.dto.userRequestDto.SignupRequestDto;
-import com.sparta.newsfeedapp.dto.userRequestDto.deleteRequestDto;
-import com.sparta.newsfeedapp.dto.userRequestDto.updateRequestDto;
-import com.sparta.newsfeedapp.dto.userResponseDto.ProfileResponseDto;
+import com.sparta.newsfeedapp.dto.user.SignupRequestDto;
+import com.sparta.newsfeedapp.dto.user.deleteRequestDto;
+import com.sparta.newsfeedapp.dto.user.updateRequestDto;
+import com.sparta.newsfeedapp.dto.user.ProfileResponseDto;
 import com.sparta.newsfeedapp.security.UserDetailsImpl;
 import com.sparta.newsfeedapp.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;

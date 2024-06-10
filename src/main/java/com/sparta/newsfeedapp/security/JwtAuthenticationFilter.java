@@ -1,7 +1,7 @@
 package com.sparta.newsfeedapp.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sparta.newsfeedapp.dto.userRequestDto.LoginRequestDto;
+import com.sparta.newsfeedapp.dto.user.LoginRequestDto;
 import com.sparta.newsfeedapp.entity.User;
 import com.sparta.newsfeedapp.jwt.JwtUtil;
 import com.sparta.newsfeedapp.repository.UserRepository;

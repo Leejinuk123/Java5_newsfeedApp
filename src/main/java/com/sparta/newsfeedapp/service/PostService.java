@@ -1,7 +1,7 @@
 package com.sparta.newsfeedapp.service;
 
-import com.sparta.newsfeedapp.dto.postRequestDto.PostRequestDto;
-import com.sparta.newsfeedapp.dto.postResponseDto.PostResponseDto;
+import com.sparta.newsfeedapp.dto.post.PostRequestDto;
+import com.sparta.newsfeedapp.dto.post.PostResponseDto;
 import com.sparta.newsfeedapp.entity.Comment;
 import com.sparta.newsfeedapp.entity.Post;
 import com.sparta.newsfeedapp.entity.User;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor

@@ -1,14 +1,13 @@
 package com.sparta.newsfeedapp.controller;
 
-import com.sparta.newsfeedapp.dto.commentRequestDto.CommentCreateRequestDto;
-import com.sparta.newsfeedapp.dto.commentRequestDto.CommentUpdateRequestDto;
-import com.sparta.newsfeedapp.dto.commentResponseDto.CommentResponseDto;
+import com.sparta.newsfeedapp.dto.comment.CommentCreateRequestDto;
+import com.sparta.newsfeedapp.dto.comment.CommentUpdateRequestDto;
+import com.sparta.newsfeedapp.dto.comment.CommentResponseDto;
 import com.sparta.newsfeedapp.security.UserDetailsImpl;
 import com.sparta.newsfeedapp.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

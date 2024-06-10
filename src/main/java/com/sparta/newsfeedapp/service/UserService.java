@@ -1,9 +1,9 @@
 package com.sparta.newsfeedapp.service;
 
-import com.sparta.newsfeedapp.dto.userRequestDto.SignupRequestDto;
-import com.sparta.newsfeedapp.dto.userRequestDto.deleteRequestDto;
-import com.sparta.newsfeedapp.dto.userRequestDto.updateRequestDto;
-import com.sparta.newsfeedapp.dto.userResponseDto.ProfileResponseDto;
+import com.sparta.newsfeedapp.dto.user.SignupRequestDto;
+import com.sparta.newsfeedapp.dto.user.deleteRequestDto;
+import com.sparta.newsfeedapp.dto.user.updateRequestDto;
+import com.sparta.newsfeedapp.dto.user.ProfileResponseDto;
 import com.sparta.newsfeedapp.entity.User;
 import com.sparta.newsfeedapp.entity.UserStatusEnum;
 import com.sparta.newsfeedapp.jwt.JwtUtil;
@@ -15,13 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Optional;
 
 import static com.sparta.newsfeedapp.entity.UserStatusEnum.DELETED;
 

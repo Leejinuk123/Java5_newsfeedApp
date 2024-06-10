@@ -1,8 +1,8 @@
 package com.sparta.newsfeedapp.controller;
 
-import com.sparta.newsfeedapp.dto.commentResponseDto.CommentResponseDto;
-import com.sparta.newsfeedapp.dto.postRequestDto.PostRequestDto;
-import com.sparta.newsfeedapp.dto.postResponseDto.PostResponseDto;
+import com.sparta.newsfeedapp.dto.comment.CommentResponseDto;
+import com.sparta.newsfeedapp.dto.post.PostRequestDto;
+import com.sparta.newsfeedapp.dto.post.PostResponseDto;
 import com.sparta.newsfeedapp.entity.Post;
 import com.sparta.newsfeedapp.security.UserDetailsImpl;
 import com.sparta.newsfeedapp.service.PostService;

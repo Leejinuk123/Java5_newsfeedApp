@@ -37,10 +37,10 @@ public class AuthService {
 
             // accessToken 새로 발급
             String newAccessToken = jwtUtil.createToken(user.getUserId());
-            log.info("access token 새로 발급" + newAccessToken);
+            log.info("access token 새로 발급 {}", newAccessToken);
             //refreshToken 새로 발급
             String newRefreshToken = jwtUtil.createRefreshToken(user.getUserId());
-            log.info("refresh token 새로 발급" + newRefreshToken);
+            log.info("refresh token 새로 발급 {}", newRefreshToken);
 
             user.setRefreshToken(newRefreshToken);
             response.setHeader("Authorization", newAccessToken);

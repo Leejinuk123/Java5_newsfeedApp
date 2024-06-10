@@ -26,7 +26,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         if(requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
             String jwtToken = requestTokenHeader.substring(7);
-            log.info("jwtToken : " + jwtToken);
+            log.info("jwtToken : {}", jwtToken);
             if (jwtBlacklistService.isTokenBlacklisted(jwtToken)) {
                 log.info("token is blacklisted");
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token is blacklisted");

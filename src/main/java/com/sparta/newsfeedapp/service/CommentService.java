@@ -1,8 +1,8 @@
 package com.sparta.newsfeedapp.service;
 
-import com.sparta.newsfeedapp.dto.commentRequestDto.CommentCreateRequestDto;
-import com.sparta.newsfeedapp.dto.commentRequestDto.CommentUpdateRequestDto;
-import com.sparta.newsfeedapp.dto.commentResponseDto.CommentResponseDto;
+import com.sparta.newsfeedapp.dto.comment.CommentCreateRequestDto;
+import com.sparta.newsfeedapp.dto.comment.CommentUpdateRequestDto;
+import com.sparta.newsfeedapp.dto.comment.CommentResponseDto;
 import com.sparta.newsfeedapp.entity.Comment;
 import com.sparta.newsfeedapp.entity.Post;
 import com.sparta.newsfeedapp.entity.User;
