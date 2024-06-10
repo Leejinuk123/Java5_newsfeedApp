@@ -1,4 +1,4 @@
-package com.sparta.newsfeedapp.dto.userResponseDto;
+package com.sparta.newsfeedapp.dto.user;
 
 import com.sparta.newsfeedapp.entity.UserStatusEnum;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.sparta.newsfeedapp.dto.userRequestDto;
+package com.sparta.newsfeedapp.dto.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

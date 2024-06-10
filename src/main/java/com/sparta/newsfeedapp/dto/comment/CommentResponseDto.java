@@ -1,4 +1,4 @@
-package com.sparta.newsfeedapp.dto.commentResponseDto;
+package com.sparta.newsfeedapp.dto.comment;
 
 import com.sparta.newsfeedapp.entity.Comment;
 import jakarta.persistence.Column;

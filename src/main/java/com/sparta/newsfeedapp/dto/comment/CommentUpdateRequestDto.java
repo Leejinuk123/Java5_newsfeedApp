@@ -1,4 +1,4 @@
-package com.sparta.newsfeedapp.dto.commentRequestDto;
+package com.sparta.newsfeedapp.dto.comment;
 
 import lombok.Getter;
 
