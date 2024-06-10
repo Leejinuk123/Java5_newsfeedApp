@@ -1,9 +1,10 @@
 package com.sparta.newsfeedapp.config;
 
-import com.sparta.newsfeedapp.jwt.JwtRequestFilter;
+import com.sparta.newsfeedapp.exception.CustomAuthenticationEntryPoint;
+import com.sparta.newsfeedapp.security.JwtRequestFilter;
 import com.sparta.newsfeedapp.security.JwtAuthorizationFilter;
 import com.sparta.newsfeedapp.security.JwtAuthenticationFilter;
-import com.sparta.newsfeedapp.jwt.JwtUtil;
+import com.sparta.newsfeedapp.security.JwtService;
 import com.sparta.newsfeedapp.repository.UserRepository;
 import com.sparta.newsfeedapp.security.UserDetailsServiceImpl;
 import com.sparta.newsfeedapp.service.JwtBlacklistService;
@@ -23,15 +24,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity // Spring Security 지원을 가능하게 함
 public class WebSecurityConfig {
 
-    private final JwtUtil jwtUtil;
+    private final JwtService jwtService;
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final UserRepository userRepository;
     private final JwtBlacklistService jwtBlacklistService;
 
-    public WebSecurityConfig(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService,
+    public WebSecurityConfig(JwtService jwtService, UserDetailsServiceImpl userDetailsService,
                              AuthenticationConfiguration authenticationConfiguration, UserRepository userRepository, JwtBlacklistService jwtBlacklistService, UserService userService) {
-        this.jwtUtil = jwtUtil;
+        this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
         this.authenticationConfiguration = authenticationConfiguration;
         this.userRepository = userRepository;
@@ -45,19 +46,19 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil, userRepository);
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtService, userRepository);
         filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return filter;
     }
 
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(jwtUtil, userDetailsService);
+        return new JwtAuthorizationFilter(jwtService, userDetailsService);
     }
 
     @Bean
     public JwtRequestFilter jwtRequestFilter() {
-        return new JwtRequestFilter(jwtBlacklistService, jwtUtil);
+        return new JwtRequestFilter(jwtBlacklistService, jwtService);
     }
 
     @Bean
@@ -80,6 +81,10 @@ public class WebSecurityConfig {
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
         );
+
+        http.exceptionHandling(auth -> {
+            auth.authenticationEntryPoint(new CustomAuthenticationEntryPoint());
+        });
 
         // 필터 관리
         http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
