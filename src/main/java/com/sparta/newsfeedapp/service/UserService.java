@@ -41,7 +41,7 @@ public class UserService {
         String bio = requestDto.getBio();
 
         // 사용자 등록
-        User user = new User(userId, password, email, name, bio, UserStatusEnum.ACTIVE);
+        User user = new User(userId, password, email, name, bio, UserStatusEnum.UNCHECKED);
         userRepository.save(user);
         log.info("회원가입 완료");
     }
@@ -52,7 +52,7 @@ public class UserService {
         if (!passwordEncoder.matches(userPassword, user.getPassword())){
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
-        user.deactivateUser();
+        user.setStatusToDeleted();
         userRepository.save(user);
     }
 

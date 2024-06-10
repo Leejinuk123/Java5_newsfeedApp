@@ -1,5 +1,9 @@
 package com.sparta.newsfeedapp.service;
 
+import com.sparta.newsfeedapp.entity.User;
+import com.sparta.newsfeedapp.repository.UserRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -9,14 +13,12 @@ import javax.mail.internet.MimeMessage;
 import java.util.Random;
 
 @Service
-public class MailSendService {
+@RequiredArgsConstructor
+public class MailService {
 
     private final JavaMailSender mailSender;
+    private final UserRepository userRepository;
     private int authNumber;
-
-    public MailSendService(JavaMailSender mailSender){
-        this.mailSender = mailSender;
-    }
 
     //임의의 6자리 양수를 반환합니다.
     public void makeRandomNumber() {
@@ -55,12 +57,26 @@ public class MailSendService {
             helper.setSubject(title);//이메일의 제목을 설정
             helper.setText(content,true);//이메일의 내용 설정 두 번째 매개 변수에 true를 설정하여 html 설정으로한다.
             mailSender.send(message);
+
+            User user = userRepository.findByEmail(toMail).orElseThrow(IllegalArgumentException::new);
+            user.setAuthNumber(String.valueOf(authNumber));
+            userRepository.save(user);
+
         } catch (MessagingException e) {//이메일 서버에 연결할 수 없거나, 잘못된 이메일 주소를 사용하거나, 인증 오류가 발생하는 등 오류
             // 이러한 경우 MessagingException이 발생
             e.printStackTrace();//e.printStackTrace()는 예외를 기본 오류 스트림에 출력하는 메서드
         }
 
 
+    }
+
+    @Transactional
+    public void CheckAuthNum(String email, String authNum) {
+        User user = userRepository.findByEmail(email).orElseThrow(IllegalArgumentException::new);
+        if (!user.getAuthNumber().equals(authNum)){
+            throw new IllegalArgumentException("인증번호가 일치하지 않습니다.");
+        }
+        user.setStatusToChecked();
     }
 
 }
