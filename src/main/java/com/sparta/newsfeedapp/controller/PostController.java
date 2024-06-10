@@ -41,8 +41,9 @@ public class PostController {
 
     // 댓글 조회
     @GetMapping("/posts/{id}/comments")
-    public List<CommentResponseDto> getComments(@PathVariable Long postId) {
-        return postService.getComments(postId).stream().map(CommentResponseDto::new).toList();
+    public List<CommentResponseDto> getComments(@PathVariable Long id) {
+        return postService.getComments(id).stream().map(CommentResponseDto::new).toList();
+
     }
 
     // 뉴스피드 수정

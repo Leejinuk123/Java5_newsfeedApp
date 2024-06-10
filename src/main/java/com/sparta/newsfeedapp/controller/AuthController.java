@@ -17,7 +17,7 @@ import java.io.IOException;
 @RequestMapping("/api")
 public class AuthController {
 
-    private AuthService authService;
+    private final AuthService authService;
     // Refresh token
     @PostMapping("/auth/refresh-token")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {

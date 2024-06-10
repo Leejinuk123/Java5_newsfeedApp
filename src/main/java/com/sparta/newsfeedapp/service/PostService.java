@@ -51,7 +51,8 @@ public class PostService {
     @Transactional
     public PostResponseDto updatePost(Long id, PostRequestDto requestDto, User user) {
         Post post = findPostById(id);
-        if (!Objects.equals(post.getUser(), user)) {
+        if (!post.getUser().getId().equals(user.getId())){
+
             throw new IllegalArgumentException("본인 게시글만 수정할 수 있습니다.");
         }
         post.update(requestDto);
@@ -60,8 +61,8 @@ public class PostService {
 
     public Long deletePost(Long id, User user) {
         Post post = findPostById(id);
-        if (!Objects.equals(post.getUser(), user)) {
-            throw new IllegalArgumentException("본인 게시글만 수정할 수 있습니다.");
+        if (!post.getUser().getId().equals(user.getId())){
+            throw new IllegalArgumentException("본인 게시글만 삭제할 수 있습니다.");
         }
         postRepository.delete(post);
         return id;

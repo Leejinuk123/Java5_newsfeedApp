@@ -17,6 +17,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 
+import static com.sparta.newsfeedapp.entity.UserStatusEnum.DELETED;
+
 @Slf4j(topic = "로그인 및 JWT 생성")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
@@ -25,7 +27,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public JwtAuthenticationFilter(JwtUtil jwtUtil, UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
-        setFilterProcessesUrl("/api/user/login");
+        setFilterProcessesUrl("/api/users/login");
     }
 
     @Override
@@ -33,6 +35,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         log.info("로그인 시도");
         try{
             LoginRequestDto loginRequestDto = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
+
+            User user = userRepository.findByUserId(loginRequestDto.getUserId()).orElseThrow(NullPointerException::new);
+            if(user.getUserStatus() == DELETED){
+                log.info("삭제된 사용자입니다");
+                throw new IllegalArgumentException("삭제된 사용자입니다.");
+            }
 
             return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(

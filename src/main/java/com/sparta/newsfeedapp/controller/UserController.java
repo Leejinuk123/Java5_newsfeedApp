@@ -7,7 +7,6 @@ import com.sparta.newsfeedapp.dto.userResponseDto.ProfileResponseDto;
 import com.sparta.newsfeedapp.security.UserDetailsImpl;
 import com.sparta.newsfeedapp.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

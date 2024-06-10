@@ -23,10 +23,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Optional;
 
+import static com.sparta.newsfeedapp.entity.UserStatusEnum.DELETED;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j(topic = "UserService")
-@Component
 public class UserService {
 
     private final UserRepository userRepository;
@@ -41,23 +42,6 @@ public class UserService {
         String name = requestDto.getName();
         String bio = requestDto.getBio();
 
-        // 회원 중복 확인
-        Optional<User> checkUsername = userRepository.findByUserId(userId);
-        if (checkUsername.isPresent()) {
-            User existUser = checkUsername.get();
-            if (existUser.getUserStatus().equals(UserStatusEnum.DELETED)) {
-                throw new IllegalArgumentException("탈퇴한 UserId입니다: " + userId);
-            } else {
-                throw new IllegalArgumentException("중복된 UserId가 존재합니다: " + userId);
-            }
-        }
-
-        // email 중복확인
-        Optional<User> checkEmail = userRepository.findByEmail(email);
-        if (checkEmail.isPresent()) {
-            throw new IllegalArgumentException("중복된 Email 입니다.");
-        }
-
         // 사용자 등록
         User user = new User(userId, password, email, name, bio, UserStatusEnum.ACTIVE);
         userRepository.save(user);
@@ -71,6 +55,7 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
         user.deactivateUser();
+        userRepository.save(user);
     }
 
     public ProfileResponseDto getProfile(User user) {
@@ -78,25 +63,39 @@ public class UserService {
         String name = user.getName();
         String email = user.getEmail();
         String bio = user.getBio();
+        UserStatusEnum userStatus = user.getUserStatus();
         if (user.getBio() == null) bio = "자기소개가 없습니다.";
 
-        return new ProfileResponseDto(userId,name,bio,email);
+        return new ProfileResponseDto(userId,name,bio,email,userStatus);
     }
 
     @Transactional
     public void updateProfile(updateRequestDto requestDto, User user) {
-        if (!passwordEncoder.matches(user.getPassword(), requestDto.getPassword())){
+        if(user.getUserStatus() == DELETED){
+            log.info("삭제된 사용자입니다");
+            throw new IllegalArgumentException("삭제된 사용자입니다.");
+        }
+        User checkUser = loadUserByUserId(user.getUserId());
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())){
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
-        if (!passwordEncoder.matches(user.getPassword(), requestDto.getNewPassword())){
-            throw new IllegalArgumentException("현재 비밀번호와 동일한 비밀번호로는 변경할 수 없습니다.");
-        }
-        String newName = requestDto.getName();
-        String newEmail = requestDto.getEmail();
-        String newPassword = passwordEncoder.encode(requestDto.getNewPassword());
-        String newBio = requestDto.getBio();
 
-        user.update(newName, newEmail, newPassword, newBio);
+        String newPassword = null;
+        String newName = null;
+        String newEmail = null;
+        String newBio = null;
+
+        if (requestDto.getNewPassword() != null){ //비밀번호가 널이 아니면 아래를 실행 ( 비밀번호가 있으면 아래를 실행 )
+            if (passwordEncoder.matches(requestDto.getNewPassword(), user.getPassword())){
+                throw new IllegalArgumentException("현재 비밀번호와 동일한 비밀번호로는 변경할 수 없습니다.");
+            }
+            newPassword = passwordEncoder.encode(requestDto.getNewPassword());
+        }
+        newName = requestDto.getName();
+        newEmail = requestDto.getEmail();
+        newBio = requestDto.getBio();
+      
+        checkUser.update(newName, newEmail, newPassword, newBio);
     }
 
     public User loadUserByUserId(String userId) throws UsernameNotFoundException {
