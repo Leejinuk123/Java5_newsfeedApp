@@ -6,7 +6,7 @@ import com.sparta.newsfeedapp.dto.user.updateRequestDto;
 import com.sparta.newsfeedapp.dto.user.ProfileResponseDto;
 import com.sparta.newsfeedapp.entity.User;
 import com.sparta.newsfeedapp.entity.UserStatusEnum;
-import com.sparta.newsfeedapp.jwt.JwtUtil;
+import com.sparta.newsfeedapp.security.JwtService;
 import com.sparta.newsfeedapp.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -30,7 +30,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
+    private final JwtService jwtService;
     private final JwtBlacklistService jwtBlacklistService;
 
     public void signup(SignupRequestDto requestDto) {
@@ -106,13 +106,13 @@ public class UserService {
         String accessToken = request.getHeader("Authorization").substring(7);
         String refreshToken = request.getHeader("RefreshToken").substring(7);
 
-        User user = loadUserByUserId(jwtUtil.extractUserId(accessToken));
+        User user = loadUserByUserId(jwtService.extractUserId(accessToken));
         user.setRefreshToken("logged out");
 
 
-        LocalDateTime accessExpiration = jwtUtil.extractExpiration(accessToken).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime accessExpiration = jwtService.extractExpiration(accessToken).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         jwtBlacklistService.blacklistToken(accessToken, accessExpiration);
-        LocalDateTime refreshExpiration = jwtUtil.extractExpiration(refreshToken).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime refreshExpiration = jwtService.extractExpiration(refreshToken).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         jwtBlacklistService.blacklistToken(refreshToken, refreshExpiration);
 
         SecurityContextHolder.clearContext();

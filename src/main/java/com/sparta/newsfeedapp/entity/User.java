@@ -58,12 +58,11 @@ public class User extends Timestamped {
         this.userStatus = UserStatusEnum.DELETED;
         this.statusChangeTime = new Timestamp(System.currentTimeMillis());
     }
+
     public void update(String newName, String newEmail, String newPassword, String newBio) {
         if (newName != null) this.name = newName;
         if (newEmail != null) this.email = newEmail;
         if (newPassword != null) this.password = newPassword;
-
-        // Todo : 비밀번호 바꾸기 싫을경우 null check 를 서비스에서?
         if (newBio != null) this.bio = newBio;
     }
 }

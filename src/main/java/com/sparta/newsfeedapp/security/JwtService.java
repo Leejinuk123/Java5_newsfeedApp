@@ -1,4 +1,4 @@
-package com.sparta.newsfeedapp.jwt;
+package com.sparta.newsfeedapp.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.function.Function;
 
 @Component
-public class JwtUtil {
+public class JwtService {
 
     // 로그 설정
     public static final Logger logger = LoggerFactory.getLogger("JWT 관련 로그");

@@ -1,7 +1,7 @@
 package com.sparta.newsfeedapp.service;
 
 import com.sparta.newsfeedapp.entity.User;
-import com.sparta.newsfeedapp.jwt.JwtUtil;
+import com.sparta.newsfeedapp.security.JwtService;
 import com.sparta.newsfeedapp.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,7 +21,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
+    private final JwtService jwtService;
     private final JwtBlacklistService jwtBlacklistService;
 
     // refresh token
@@ -31,15 +31,15 @@ public class AuthService {
 //        log.info("Refresh token: " + refreshToken);
 
         // accessToken 유효성 확인
-        if(jwtUtil.validateToken(refreshToken)){
-            String userId = jwtUtil.extractUserId(refreshToken);
+        if(jwtService.validateToken(refreshToken)){
+            String userId = jwtService.extractUserId(refreshToken);
             User user = userRepository.findByUserId(userId).orElseThrow(NullPointerException::new);
 
             // accessToken 새로 발급
-            String newAccessToken = jwtUtil.createToken(user.getUserId());
+            String newAccessToken = jwtService.createToken(user.getUserId());
             log.info("access token 새로 발급 {}", newAccessToken);
             //refreshToken 새로 발급
-            String newRefreshToken = jwtUtil.createRefreshToken(user.getUserId());
+            String newRefreshToken = jwtService.createRefreshToken(user.getUserId());
             log.info("refresh token 새로 발급 {}", newRefreshToken);
 
             user.setRefreshToken(newRefreshToken);

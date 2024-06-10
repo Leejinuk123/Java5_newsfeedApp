@@ -1,7 +1,5 @@
 package com.sparta.newsfeedapp.security;
 
-import com.sparta.newsfeedapp.jwt.JwtUtil;
-import com.sparta.newsfeedapp.security.UserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -21,11 +19,11 @@ import java.io.IOException;
 @Slf4j(topic = "JWT 검증 및 인가")
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
-    private final JwtUtil jwtUtil;
+    private final JwtService jwtService;
     private final UserDetailsServiceImpl userDetailsService;
 
-    public JwtAuthorizationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService) {
-        this.jwtUtil = jwtUtil;
+    public JwtAuthorizationFilter(JwtService jwtService, UserDetailsServiceImpl userDetailsService) {
+        this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
     }
 
@@ -37,15 +35,15 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         if (StringUtils.hasText(tokenValue)) {
             // JWT 토큰 substring
-            tokenValue = jwtUtil.substringToken(tokenValue);
+            tokenValue = jwtService.substringToken(tokenValue);
             log.info(tokenValue);
 
-            if (!jwtUtil.validateToken(tokenValue)) {
+            if (!jwtService.validateToken(tokenValue)) {
                 log.error("Token Error");
                 return;
             }
 
-            Claims info = jwtUtil.getUserInfoFromToken(tokenValue);
+            Claims info = jwtService.getUserInfoFromToken(tokenValue);
 
             try {
                 setAuthentication(info.getSubject());

@@ -1,4 +1,4 @@
-package com.sparta.newsfeedapp.jwt;
+package com.sparta.newsfeedapp.security;
 
 import com.sparta.newsfeedapp.service.JwtBlacklistService;
 import jakarta.servlet.FilterChain;
@@ -18,7 +18,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     // 요청 들어올때마다 토큰이 블랙리스트에 있는지 확인한다
 
     private JwtBlacklistService jwtBlacklistService;
-    private JwtUtil jwtUtil;
+    private JwtService jwtService;
 
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
