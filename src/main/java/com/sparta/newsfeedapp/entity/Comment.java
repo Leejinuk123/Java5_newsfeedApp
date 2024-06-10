@@ -26,12 +26,8 @@ public class Comment extends Timestamped{
     @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "count_liked", nullable = false)
-    private Integer countLiked;
-
     public Comment(CommentCreateRequestDto requestDto, User user, Post post){
         this.content = requestDto.getContent();
-        this.countLiked = 0;
         this.user = user;
         this.post = post;
     }
